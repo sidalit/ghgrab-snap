@@ -1,0 +1,64 @@
+name: ghgrab
+base: core26
+version: '2.3.1'
+title: ghgrab
+summary: Browse and download files from GitHub, GitLab and other forges
+description: |
+  ghgrab browses repositories on GitHub, GitLab, Codeberg, Gitea and Forgejo
+  from a terminal interface, and downloads single files, folders or GitHub
+  release assets without cloning. Its agent commands print JSON for scripts,
+  and it can run as an MCP server for coding assistants.
+
+  **Examples**
+
+     ghgrab
+     ghgrab https://github.com/rust-lang/rust --cwd
+     ghgrab rel sharkdp/bat --extract --out ./bat
+     ghgrab agent tree https://github.com/rust-lang/rust
+
+  **File access**
+
+  ghgrab saves downloads in your home directory. To also save to USB drives
+  and other removable media (/media, /mnt), run:
+
+     sudo snap connect ghgrab:removable-media
+license: MIT
+grade: stable
+confinement: strict
+website: https://ghgrab.readthedocs.io/
+source-code:
+  - https://github.com/abhixdd/ghgrab
+  - https://github.com/sidalit/ghgrab-snap
+issues:
+  - https://github.com/abhixdd/ghgrab/issues
+  - https://github.com/sidalit/ghgrab-snap/issues
+contact: https://github.com/sidalit/ghgrab-snap/issues
+
+platforms:
+  amd64:
+  arm64:
+
+apps:
+  ghgrab:
+    command: bin/ghgrab
+    plugs:
+      - home
+      - network
+      - removable-media
+
+parts:
+  ghgrab:
+    plugin: rust
+    source: https://github.com/abhixdd/ghgrab.git
+    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    source-depth: 1
+    rust-channel: stable
+    rust-cargo-parameters: [--bin, ghgrab]
+    build-packages:
+      - build-essential
+    override-build: |
+      craftctl default
+      install -Dm644 LICENSE -t "$CRAFT_PART_INSTALL/usr/share/doc/ghgrab"
+    # Running ghgrab inside a clone reads its origin with git.
+    stage-slices:
+      - git_bins
