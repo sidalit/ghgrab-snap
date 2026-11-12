@@ -41,6 +41,8 @@ platforms:
 apps:
   ghgrab:
     command: bin/ghgrab
+    environment:
+      XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
     plugs:
       - home
       - network
